@@ -3,12 +3,11 @@ name: Deploy Lambdas to AWS
 on:
   push:
     branches:
-      - main # Запускаем пайплайн при пуше в ветку main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,25 +20,23 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9' # Используем Python 3.9 (можно изменить, если лямбды требуют другую версию)
-
-      - name: Zip and Deploy createOrder Lambda
+      - name: Deploy createOrder
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_createOrder
-          zip -r createOrder.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_createOrder --zip-file fileb://createOrder.zip
+          zip -r code.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_createOrder --zip-file fileb://code.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_createOrder --handler handler.handler || true
 
-      - name: Zip and Deploy reserveStock Lambda
+      - name: Deploy reserveStock
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_reserveStock
-          zip -r reserveStock.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_reserveStock --zip-file fileb://reserveStock.zip
+          zip -r code.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_reserveStock --zip-file fileb://code.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_reserveStock --handler handler.handler || true
 
-      - name: Zip and Deploy sendNotification Lambda
+      - name: Deploy sendNotification
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_sendNotification
-          zip -r sendNotification.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_sendNotification --zip-file fileb://sendNotification.zip
+          zip -r code.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_sendNotification --zip-file fileb://code.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_sendNotification --handler handler.handler || true
