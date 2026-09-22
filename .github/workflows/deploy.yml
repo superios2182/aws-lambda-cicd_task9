@@ -1,0 +1,44 @@
+name: Deploy Lambdas to AWS
+
+on:
+  push:
+    branches:
+      - main # Запускаем пайплайн при пуше в ветку main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # Используем Python 3.9 (можно изменить, если лямбды требуют другую версию)
+
+      - name: Zip and Deploy createOrder Lambda
+        run: |
+          cd lambdas/cmtr_ngt8zi57_lambda_createOrder
+          zip -r createOrder.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_createOrder --zip-file fileb://createOrder.zip
+
+      - name: Zip and Deploy reserveStock Lambda
+        run: |
+          cd lambdas/cmtr_ngt8zi57_lambda_reserveStock
+          zip -r reserveStock.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_reserveStock --zip-file fileb://reserveStock.zip
+
+      - name: Zip and Deploy sendNotification Lambda
+        run: |
+          cd lambdas/cmtr_ngt8zi57_lambda_sendNotification
+          zip -r sendNotification.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_sendNotification --zip-file fileb://sendNotification.zip
