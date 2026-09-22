@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
@@ -23,20 +23,20 @@ jobs:
       - name: Deploy createOrder
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_createOrder
-          zip -r code.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_createOrder --zip-file fileb://code.zip
-          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_createOrder --handler handler.handler || true
+          zip -r function.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_createOrder --zip-file fileb://function.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_createOrder --handler handler.lambda_handler
 
       - name: Deploy reserveStock
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_reserveStock
-          zip -r code.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_reserveStock --zip-file fileb://code.zip
-          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_reserveStock --handler handler.handler || true
+          zip -r function.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_reserveStock --zip-file fileb://function.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_reserveStock --handler handler.lambda_handler
 
       - name: Deploy sendNotification
         run: |
           cd lambdas/cmtr_ngt8zi57_lambda_sendNotification
-          zip -r code.zip .
-          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_sendNotification --zip-file fileb://code.zip
-          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_sendNotification --handler handler.handler || true
+          zip -r function.zip .
+          aws lambda update-function-code --function-name cmtr_ngt8zi57_lambda_sendNotification --zip-file fileb://function.zip
+          aws lambda update-function-configuration --function-name cmtr_ngt8zi57_lambda_sendNotification --handler handler.lambda_handler
